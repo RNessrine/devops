@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Nom de l'instance SonarQube configurée dans Jenkins
         SONARQUBE_SERVER = 'sonar-server'
-        SONAR_SCANNER_HOME = tool 'sonar-qube'
+        SONAR_SCANNER_HOME = tool 'SonarQube'
     }
 
     stages {
