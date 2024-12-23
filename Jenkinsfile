@@ -27,7 +27,7 @@ pipeline {
         }
         stage ('SonarQube Analysis for backend') {
             steps {
-                withSonarQubeEnv('sonar-qube-server') {
+                withSonarQubeEnv('sonar-server') {
                     dir("nodejs-express-sequelize-mysql-master") {
                         sh """
                             ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
