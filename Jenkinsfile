@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Nom de l'instance SonarQube configurée dans Jenkins
-        SONARQUBE_SERVER = 'sonar-server'
+        SONARQUBE_SERVER = 'sonar-server' // Nom configuré dans Jenkins
     }
 
     stages {
@@ -29,21 +28,13 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                echo 'Deployment steps go here'
-            }
-        }
-
         stage('SonarQube Analysis for Backend') {
             steps {
-                withSonarQubeEnv(sonar-server) {
+                withSonarQubeEnv(SONARQUBE_SERVER) {
                     dir('nodejs-express-sequelize-mysql-master') {
                         sh '''
                             sonar-scanner \
                             -Dsonar.projectKey=backend-project \
-                            -Dsonar.projectName="Backend Project" \
-                            -Dsonar.projectVersion=1.0 \
                             -Dsonar.sources=. \
                             -Dsonar.sourceEncoding=UTF-8 \
                             -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
@@ -56,13 +47,11 @@ pipeline {
 
         stage('SonarQube Analysis for Frontend') {
             steps {
-                withSonarQubeEnv(sonar-server) {
+                withSonarQubeEnv(SONARQUBE_SERVER) {
                     dir('react-crud-web-api-master') {
                         sh '''
                             sonar-scanner \
                             -Dsonar.projectKey=frontend-project \
-                            -Dsonar.projectName="Frontend Project" \
-                            -Dsonar.projectVersion=1.0 \
                             -Dsonar.sources=. \
                             -Dsonar.sourceEncoding=UTF-8 \
                             -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
