@@ -25,6 +25,36 @@ pipeline {
                 echo 'Deployment steps go here'
             }
         }
+        stage ('SonarQube Analysis for backend') {
+            steps {
+                withSonarQubeEnv('sonar-qube-server') {
+                    dir("nodejs-express-sequelize-mysql-master") {
+                        sh """
+                            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+                            -Dsonar.projectKey=tuto-backend \
+                            -Dsonar.sources=. \
+                            -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
+                            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                            """
+                    }
+                }
+            }
+        }
+        stage ('SonarQube Analysis for frontend') {
+            steps {
+                withSonarQubeEnv('sonar-qube-server') {
+                    dir("frontend") {
+                        sh """
+                            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+                            -Dsonar.projectKey=tuto-frontend \
+                            -Dsonar.sources=. \
+                            -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
+                            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                            """
+                    }
+                }
+            }
+        }
     }
     post {
         always {
