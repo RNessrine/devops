@@ -25,32 +25,33 @@ pipeline {
                 echo 'Deployment steps go here'
             }
         }
-        stage('SonarQube Analysis for Backend') {
+       
+        stage ('SonarQube Analysis for backend') {
             steps {
-                withSonarQubeEnv('sonar-server') { // Remplacez 'sonar-server' par le nom exact de votre configuration SonarQube
-                    dir('nodejs-express-sequelize-mysql-master') {
+                withSonarQubeEnv('sonar-server') {
+                    dir("nodejs-express-sequelize-mysql-master") {
                         sh """
-                            sonar-scanner \
+                            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
                             -Dsonar.projectKey=tuto-backend \
                             -Dsonar.sources=. \
-                            -Dsonar.exclusions=node_modules/,coverage/,test/ \
+                            -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
                             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                        """
+                            """
                     }
                 }
             }
         }
-        stage('SonarQube Analysis for Frontend') {
+        stage ('SonarQube Analysis for frontend') {
             steps {
-                withSonarQubeEnv('sonar-server') { // Remplacez 'sonar-server' par le nom exact de votre configuration SonarQube
-                    dir('react-crud-web-api-master') {
+                withSonarQubeEnv('sonar-server') {
+                    dir("react-crud-web-api-master") {
                         sh """
-                            sonar-scanner \
+                            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
                             -Dsonar.projectKey=tuto-frontend \
                             -Dsonar.sources=. \
-                            -Dsonar.exclusions=node_modules/,coverage/,test/ \
+                            -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
                             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                        """
+                            """
                     }
                 }
             }
