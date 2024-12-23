@@ -1,38 +1,50 @@
-pipeline {
-    agent any
 
+       pipeline {
+    agent any
+    
+    environment {
+        DOCKER_COMPOSE_VERSION = '1.29.2'
+    }
+    
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
             steps {
-          
-                git 'https://github.com/RNessrine/devops.git'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: 'main']],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [],
+                    submoduleCfg: [],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/RNessrine/devops.git'
+                    ]]
+                ])
             }
         }
-
+        
         stage('Build Backend Docker Image') {
             steps {
-                script {
-                    sh 'docker build -t backend:latest -f Dockerfile.backend .'
+                dir('backend') {
+                    sh 'docker build -t backend:latest .'
                 }
             }
         }
-
+        
         stage('Build Frontend Docker Image') {
             steps {
-                script {
-                    sh 'docker build -t frontend:latest -f Dockerfile.frontend .'
+                dir('frontend') {
+                    sh 'docker build -t frontend:latest .'
                 }
             }
         }
+        
         stage('Deploy with Docker Compose') {
             steps {
-                script {
-                    sh 'docker-compose -f docker-compose.yml up -d'
-                }
+                sh 'docker-compose up -d'
             }
         }
     }
-
+    
     post {
         always {
             cleanWs()
