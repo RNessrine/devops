@@ -40,6 +40,7 @@ pipeline {
                 withSonarQubeEnv(SONARQUBE_SERVER) {
                     dir('nodejs-express-sequelize-mysql-master') {
                         sh '''
+                        ${SONAR_SCANNER_HOME}/bin/sonar-scanner
                             sonar-scanner \
                             -Dsonar.projectKey=backend-project \
                             -Dsonar.projectName="Backend Project" \
@@ -59,6 +60,7 @@ pipeline {
                 withSonarQubeEnv(SONARQUBE_SERVER) {
                     dir('react-crud-web-api-master') {
                         sh '''
+                        ${SONAR_SCANNER_HOME}/bin/sonar-scanner
                             sonar-scanner \
                             -Dsonar.projectKey=frontend-project \
                             -Dsonar.projectName="Frontend Project" \
