@@ -2,8 +2,8 @@ pipeline {
     agent any
     
     tools {
-        // Ajout de l'outil SonarScanner
-        'org.sonarqube.scanner.SonarScanner' 'SonarScanner'
+        // Correction du type d'outil SonarQube
+        'hudson.plugins.sonar.SonarRunnerInstallation' 'SonarScanner'
     }
     
     environment {
