@@ -1,11 +1,18 @@
 pipeline {
     agent any
+
+    environment {
+        // Nom de l'instance SonarQube configurée dans Jenkins
+        SONARQUBE_SERVER = 'sonar-server'
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                git branch: 'main', url: 'https://github.com/RNessrine/devops.git'
+                checkout scm
             }
         }
+
         stage('Build Backend') {
             steps {
                 dir('nodejs-express-sequelize-mysql-master') {
@@ -13,6 +20,7 @@ pipeline {
                 }
             }
         }
+
         stage('Build Frontend') {
             steps {
                 dir('react-crud-web-api-master') {
@@ -20,43 +28,52 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy') {
             steps {
                 echo 'Deployment steps go here'
             }
         }
-       
-        stage ('SonarQube Analysis for backend') {
+
+        stage('SonarQube Analysis for Backend') {
             steps {
-                withSonarQubeEnv('sonar-server') {
-                    dir("nodejs-express-sequelize-mysql-master") {
-                        sh """
-                            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-                            -Dsonar.projectKey=tuto-backend \
+                withSonarQubeEnv(sonar-server) {
+                    dir('nodejs-express-sequelize-mysql-master') {
+                        sh '''
+                            sonar-scanner \
+                            -Dsonar.projectKey=backend-project \
+                            -Dsonar.projectName="Backend Project" \
+                            -Dsonar.projectVersion=1.0 \
                             -Dsonar.sources=. \
+                            -Dsonar.sourceEncoding=UTF-8 \
                             -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
                             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                            """
+                        '''
                     }
                 }
             }
         }
-        stage ('SonarQube Analysis for frontend') {
+
+        stage('SonarQube Analysis for Frontend') {
             steps {
-                withSonarQubeEnv('sonar-server') {
-                    dir("react-crud-web-api-master") {
-                        sh """
-                            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-                            -Dsonar.projectKey=tuto-frontend \
+                withSonarQubeEnv(sonar-server) {
+                    dir('react-crud-web-api-master') {
+                        sh '''
+                            sonar-scanner \
+                            -Dsonar.projectKey=frontend-project \
+                            -Dsonar.projectName="Frontend Project" \
+                            -Dsonar.projectVersion=1.0 \
                             -Dsonar.sources=. \
+                            -Dsonar.sourceEncoding=UTF-8 \
                             -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
                             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                            """
+                        '''
                     }
                 }
             }
         }
     }
+
     post {
         always {
             cleanWs()
