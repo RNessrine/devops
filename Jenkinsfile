@@ -8,14 +8,14 @@ pipeline {
         }
         stage('Build Backend') {
             steps {
-                dir('nodejs-express-sequelize-mysql-master') { // Spécifiez le répertoire contenant le Dockerfile du backend
+                dir('nodejs-express-sequelize-mysql-master') {
                     sh 'docker build -t backend:latest .'
                 }
             }
         }
         stage('Build Frontend') {
             steps {
-                dir('react-crud-web-api-master') { // Spécifiez le répertoire contenant le Dockerfile du frontend
+                dir('react-crud-web-api-master') {
                     sh 'docker build -t frontend:latest .'
                 }
             }
@@ -25,32 +25,32 @@ pipeline {
                 echo 'Deployment steps go here'
             }
         }
-        stage ('SonarQube Analysis for backend') {
+        stage('SonarQube Analysis for Backend') {
             steps {
-                withSonarQubeEnv('sonar-server') {
-                    dir("nodejs-express-sequelize-mysql-master") {
+                withSonarQubeEnv('sonar-server') { // Remplacez 'sonar-server' par le nom exact de votre configuration SonarQube
+                    dir('nodejs-express-sequelize-mysql-master') {
                         sh """
-                            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+                            sonar-scanner \
                             -Dsonar.projectKey=tuto-backend \
                             -Dsonar.sources=. \
                             -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
                             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                            """
+                        """
                     }
                 }
             }
         }
-        stage ('SonarQube Analysis for frontend') {
+        stage('SonarQube Analysis for Frontend') {
             steps {
-                withSonarQubeEnv('sonar-server') {
-                    dir("frontend") {
+                withSonarQubeEnv('sonar-server') { // Remplacez 'sonar-server' par le nom exact de votre configuration SonarQube
+                    dir('react-crud-web-api-master') {
                         sh """
-                            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+                            sonar-scanner \
                             -Dsonar.projectKey=tuto-frontend \
                             -Dsonar.sources=. \
                             -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
                             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                            """
+                        """
                     }
                 }
             }
