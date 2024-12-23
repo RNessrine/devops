@@ -12,6 +12,28 @@ pipeline {
             }
         }
 
+        stage('Install & Test Backend') {
+            steps {
+                dir('nodejs-express-sequelize-mysql-master') {
+                    sh '''
+                    npm install
+                    npm test -- --coverage
+                    '''
+                }
+            }
+        }
+
+        stage('Install & Test Frontend') {
+            steps {
+                dir('react-crud-web-api-master') {
+                    sh '''
+                    npm install
+                    npm test -- --coverage
+                    '''
+                }
+            }
+        }
+
         stage('Build Backend') {
             steps {
                 dir('nodejs-express-sequelize-mysql-master') {
@@ -33,20 +55,10 @@ pipeline {
                 withSonarQubeEnv(SONARQUBE_SERVER) {
                     dir('nodejs-express-sequelize-mysql-master') {
                         script {
-                            // Install SonarScanner locally
                             sh '''
-                            if ! command -v sonar-scanner &> /dev/null; then
-                                echo "Sonar Scanner not found, installing..."
-                                curl -o /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
-                                unzip /tmp/sonar-scanner.zip -d ${WORKSPACE}/sonar-scanner
-                                export PATH=${WORKSPACE}/sonar-scanner/sonar-scanner-4.7.0.2747-linux/bin:$PATH
-                            fi
-
-                            # Ensure coverage report exists
-                            if [ ! -f coverage/lcov.info ]; then
-                                echo "Coverage report not found! Ensure tests generate coverage reports."
-                                exit 1
-                            fi
+                            curl -o /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+                            unzip /tmp/sonar-scanner.zip -d ${WORKSPACE}/sonar-scanner
+                            export PATH=${WORKSPACE}/sonar-scanner/sonar-scanner-4.7.0.2747-linux/bin:$PATH
 
                             sonar-scanner \
                             -Dsonar.projectKey=${BACKEND_PROJECT_KEY} \
@@ -67,18 +79,9 @@ pipeline {
                     dir('react-crud-web-api-master') {
                         script {
                             sh '''
-                            if ! command -v sonar-scanner &> /dev/null; then
-                                echo "Sonar Scanner not found, installing..."
-                                curl -o /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
-                                unzip /tmp/sonar-scanner.zip -d ${WORKSPACE}/sonar-scanner
-                                export PATH=${WORKSPACE}/sonar-scanner/sonar-scanner-4.7.0.2747-linux/bin:$PATH
-                            fi
-
-                            # Ensure coverage report exists
-                            if [ ! -f coverage/lcov.info ]; then
-                                echo "Coverage report not found! Ensure tests generate coverage reports."
-                                exit 1
-                            fi
+                            curl -o /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+                            unzip /tmp/sonar-scanner.zip -d ${WORKSPACE}/sonar-scanner
+                            export PATH=${WORKSPACE}/sonar-scanner/sonar-scanner-4.7.0.2747-linux/bin:$PATH
 
                             sonar-scanner \
                             -Dsonar.projectKey=${FRONTEND_PROJECT_KEY} \
