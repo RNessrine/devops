@@ -1,28 +1,15 @@
-
-       pipeline {
+pipeline {
     agent any
-    
-    environment {
-        DOCKER_COMPOSE_VERSION = '1.29.2'
-    }
     
     stages {
         stage('Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: 'main']],
-                    doGenerateSubmoduleConfigurations: false,
-                    extensions: [],
-                    submoduleCfg: [],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/RNessrine/devops.git'
-                    ]]
-                ])
+                git branch: 'main',
+                    url: 'https://github.com/RNessrine/devops.git'
             }
         }
         
-        stage('Build Backend Docker Image') {
+        stage('Build Backend') {
             steps {
                 dir('backend') {
                     sh 'docker build -t backend:latest .'
@@ -30,15 +17,15 @@
             }
         }
         
-        stage('Build Frontend Docker Image') {
+        stage('Build Frontend') {
             steps {
                 dir('frontend') {
                     sh 'docker build -t frontend:latest .'
                 }
             }
         }
-        
-        stage('Deploy with Docker Compose') {
+
+        stage('Deploy') {
             steps {
                 sh 'docker-compose up -d'
             }
