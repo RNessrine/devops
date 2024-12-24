@@ -84,7 +84,7 @@ pom=readMavenPom file: "pom.xml";
 filesByGlob FindFiles(glob: "target/".$[pom.packaging)");
 echo "$(filesByGlob[e].name) $[filesByGlob[6].path) $[filesByGlob[e].directory) $(filesByGlob[e].length) $(filesByGlob[e].lastModified)"
 artifactPath = filesByGlob[e].path;
-artifactExists fileExists artifactPath;
+artifactExists = fileExists artifactPath;
 if(artifactExists) (
 echo "*** File: S(artifactPath), group: $[pom.groupId), packaging: $(pom.packaging), version $(pom.version)";
 nexusArtifactuploader(
