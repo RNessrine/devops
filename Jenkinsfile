@@ -79,7 +79,7 @@ pipeline {
             }
         }
     }
-    script {
+ /*   script {
 pom=readMavenPom file: "pom.xml";
 filesByGlob FindFiles(glob: "target/".$[pom.packaging)");
 echo "$(filesByGlob[e].name) $[filesByGlob[6].path) $[filesByGlob[e].directory) $(filesByGlob[e].length) $(filesByGlob[e].lastModified)"
@@ -109,7 +109,7 @@ type: "pom"]
 } else {
 error "*** File: $(artifactPath), could not be found";
 }
-    }
+    }*/
     post {
         always {
             cleanWs()
