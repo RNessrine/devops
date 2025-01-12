@@ -86,8 +86,18 @@ pipeline {
                 script {
                     // Upload Backend artifacts
                     dir('nodejs-express-sequelize-mysql-master') {
-                        // Create a tarball of the backend
-                        sh 'tar -czf backend.tar.gz --exclude="node_modules" --exclude=".git" .'
+                        sh '''
+                            # Créer un répertoire temporaire
+                            mkdir -p temp_backend
+                            # Copier les fichiers nécessaires
+                            cp -r * temp_backend/ || true
+                            # Exclure node_modules et .git
+                            rm -rf temp_backend/node_modules temp_backend/.git || true
+                            # Créer l'archive
+                            tar -czf backend.tar.gz -C temp_backend .
+                            # Nettoyer
+                            rm -rf temp_backend
+                        '''
                         
                         // Upload to Nexus
                         nexusArtifactUploader(
@@ -109,8 +119,18 @@ pipeline {
 
                     // Upload Frontend artifacts
                     dir('react-crud-web-api-master') {
-                        // Create a tarball of the frontend
-                        sh 'tar -czf frontend.tar.gz --exclude="node_modules" --exclude=".git" .'
+                        sh '''
+                            # Créer un répertoire temporaire
+                            mkdir -p temp_frontend
+                            # Copier les fichiers nécessaires
+                            cp -r * temp_frontend/ || true
+                            # Exclure node_modules et .git
+                            rm -rf temp_frontend/node_modules temp_frontend/.git || true
+                            # Créer l'archive
+                            tar -czf frontend.tar.gz -C temp_frontend .
+                            # Nettoyer
+                            rm -rf temp_frontend
+                        '''
                         
                         // Upload to Nexus
                         nexusArtifactUploader(
