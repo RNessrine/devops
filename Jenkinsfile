@@ -8,7 +8,7 @@ pipeline {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_URL = "35.173.178.243:8088"
-        NEXUS_REPOSITORY = "npm-hosted"
+        NEXUS_REPOSITORY = "maven-nexus-repo"  // Changé pour utiliser un repository Maven
         NEXUS_CREDENTIAL_ID = "nexus-user-credentials"
     }
 
@@ -87,16 +87,20 @@ pipeline {
                     // Upload Backend artifacts
                     dir('nodejs-express-sequelize-mysql-master') {
                         sh '''
-                            # Créer un répertoire temporaire
-                            mkdir -p temp_backend
+                            # Nettoyer d'abord
+                            rm -rf temp_dir backend.tar.gz || true
+                            
+                            # Créer un nouveau répertoire temporaire
+                            mkdir -p temp_dir
+                            
                             # Copier les fichiers nécessaires
-                            cp -r * temp_backend/ || true
-                            # Exclure node_modules et .git
-                            rm -rf temp_backend/node_modules temp_backend/.git || true
-                            # Créer l'archive
-                            tar -czf backend.tar.gz -C temp_backend .
+                            cp -R app server.js package.json Dockerfile README.md temp_dir/
+                            
+                            # Créer l'archive depuis le répertoire temporaire
+                            cd temp_dir && tar -czf ../backend.tar.gz .
+                            
                             # Nettoyer
-                            rm -rf temp_backend
+                            cd .. && rm -rf temp_dir
                         '''
                         
                         // Upload to Nexus
@@ -107,7 +111,7 @@ pipeline {
                             repository: NEXUS_REPOSITORY,
                             credentialsId: NEXUS_CREDENTIAL_ID,
                             groupId: 'com.devops',
-                            version: env.BUILD_NUMBER,
+                            version: "${env.BUILD_NUMBER}",
                             artifacts: [
                                 [artifactId: 'backend',
                                  classifier: '',
@@ -120,16 +124,20 @@ pipeline {
                     // Upload Frontend artifacts
                     dir('react-crud-web-api-master') {
                         sh '''
-                            # Créer un répertoire temporaire
-                            mkdir -p temp_frontend
+                            # Nettoyer d'abord
+                            rm -rf temp_dir frontend.tar.gz || true
+                            
+                            # Créer un nouveau répertoire temporaire
+                            mkdir -p temp_dir
+                            
                             # Copier les fichiers nécessaires
-                            cp -r * temp_frontend/ || true
-                            # Exclure node_modules et .git
-                            rm -rf temp_frontend/node_modules temp_frontend/.git || true
-                            # Créer l'archive
-                            tar -czf frontend.tar.gz -C temp_frontend .
+                            cp -R src public package.json Dockerfile README.md temp_dir/
+                            
+                            # Créer l'archive depuis le répertoire temporaire
+                            cd temp_dir && tar -czf ../frontend.tar.gz .
+                            
                             # Nettoyer
-                            rm -rf temp_frontend
+                            cd .. && rm -rf temp_dir
                         '''
                         
                         // Upload to Nexus
@@ -140,7 +148,7 @@ pipeline {
                             repository: NEXUS_REPOSITORY,
                             credentialsId: NEXUS_CREDENTIAL_ID,
                             groupId: 'com.devops',
-                            version: env.BUILD_NUMBER,
+                            version: "${env.BUILD_NUMBER}",
                             artifacts: [
                                 [artifactId: 'frontend',
                                  classifier: '',
