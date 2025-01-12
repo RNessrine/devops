@@ -7,7 +7,7 @@ pipeline {
         //SONAR_SCANNER_HOME = tool 'SonarQube'
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
-        NEXUS_URL = "35.173.178.243:8088"
+           NEXUS_URL = "http://35.173.178.243:8088"
         NEXUS_REPOSITORY = "maven-nexus-repo"  // Changé pour utiliser un repository Maven
         NEXUS_CREDENTIAL_ID = "nexus-user-credentials"
     }
